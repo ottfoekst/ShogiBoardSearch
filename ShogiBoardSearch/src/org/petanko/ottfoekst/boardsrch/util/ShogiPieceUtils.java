@@ -2,11 +2,10 @@ package org.petanko.ottfoekst.boardsrch.util;
 
 /**
  * 将棋駒に関する定数・メソッドを集めたクラス。
- * 
  * @author ottfoekst
  *
  */
-public class ShogiPieceUtil {
+public class ShogiPieceUtils {
 
 	/** 駒がないマスを表す数値*/
 	public static final int EMPTY = 0, EMP = 0;
