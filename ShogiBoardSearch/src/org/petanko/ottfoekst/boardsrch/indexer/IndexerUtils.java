@@ -34,7 +34,7 @@ public class IndexerUtils {
 	/**
 	 * 局面転置インデックスファイルのパスを返します。
 	 * @param indexDir インデックスを格納するパス
-	 * @param blockNo 局面ブロック
+	 * @param blockNo 局面ブロック番号
 	 * @return 局面転置インデックスファイルのパス
 	 */
 	public static Path getBoardInvFilePath(Path indexDir, int blockNo) {
@@ -44,7 +44,7 @@ public class IndexerUtils {
 	/**
 	 * 局面転置インデックスポインタファイルのパスを返します。
 	 * @param indexDir インデックスを格納するパス
-	 * @param blockNo 局面ブロック
+	 * @param blockNo 局面ブロック番号
 	 * @return 局面転置インデックスポインタファイルのパス
 	 */
 	public static Path getBoardInvPtrFilePath(Path indexDir, int blockNo) {
