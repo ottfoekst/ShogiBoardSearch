@@ -1,9 +1,11 @@
 package org.petanko.ottfoekst.boardsrch.util;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -22,6 +24,16 @@ public class IoUtils {
 	 */
 	public static DataOutputStream newDataOutputStream(Path filePath) throws Exception {
 		return new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePath.toFile())));
+	}
+	
+	/**
+	 * 指定したファイルパスに書き込み可能なBufferedReaderを返します。
+	 * @param filePath ファイルパス
+	 * @return filePathに書き込み可能なBufferedReader
+	 * @throws Exception
+	 */
+	public static BufferedReader newBufferedReader(Path filePath) throws Exception {
+		return new BufferedReader(new FileReader(filePath.toFile()));
 	}
 
 	/**
