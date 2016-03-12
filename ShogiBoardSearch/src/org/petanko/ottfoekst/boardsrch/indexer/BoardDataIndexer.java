@@ -25,9 +25,6 @@ import org.petanko.ottfoekst.petankoshogi.util.ShogiUtils;
  */
 public class BoardDataIndexer {
 
-	/** 棋譜データのファイルパスの区切り文字 */
-	public static final char KIFUDATA_DELIM = 0x00;
-	
 	/** インデックスを格納するパス */
 	private Path indexDir;
 	/** 棋譜ファイルが格納されたパス */
@@ -78,6 +75,7 @@ public class BoardDataIndexer {
 			
 			// メモリ上に転置インデックスを構築
 			createInvIndexOnMemory(kifuDataPath.toFile());
+			// TODO 転置インデックスの書き出し
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -126,8 +124,8 @@ public class BoardDataIndexer {
 			
 			// 棋譜ファイルを読み込む
 			String[] kifuDataList = Files.readAllLines(kifuDataFileOrFolder.toPath(), Charset.forName("MS932")).toArray(new String[0]);
-			// 棋譜ファイルの指し手のリスト
-			PieceMove[] pieceMoveList = kifFileUtils.createPieceMoveListFromKifFile(kifuDataList);
+			// 棋譜ファイルの内容に従って盤面を動かし、局面をインデックスに登録
+			addBoardDataToInvIndex(kifuDataList);
 			
 			// 棋譜IDのカウントアップ
 			kifuId++;
@@ -144,6 +142,13 @@ public class BoardDataIndexer {
 		return kifuFileName.length();
 	}
 
+	private void addBoardDataToInvIndex(String[] kifuDataList) {
+		// 平手の初期局面
+		PiecePosition piecePosition = ShogiUtils.getHiratePiecePosition();
+		
+		PieceMove[] pieceMoveList = kifFileUtils.createPieceMoveListFromKifFile(kifuDataList);
+	}
+
 	private void closeDosList() {
 		// 全てのDataOutputStreamを連結
 		DataOutputStream[] allDosList = Stream.concat(Arrays.stream(new DataOutputStream[]{kifuIdDos, kifuIdPtrDos}), 
@@ -151,15 +156,7 @@ public class BoardDataIndexer {
 		// Exceptionをスローせずに全て閉じる
 		IoUtils.closeSilently(allDosList);
 	}
-	
-	public int getBeforeTo() {
-		return beforeTo;
-	}
-	
-	public void setBeforeTo(int newBeforeTo) {
-		this.beforeTo = newBeforeTo;
-	}
-	
+		
 	/** kifファイルの内部ユーティリティクラス */
 	private class KifFileUtils {
 		
