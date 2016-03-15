@@ -1,6 +1,7 @@
 package org.petanko.ottfoekst.boardsrch.indexer;
 
-import static org.petanko.ottfoekst.petankoshogi.board.ShogiPiece.*;
+import static org.petanko.ottfoekst.petankoshogi.board.ShogiPiece.ENEMY;
+import static org.petanko.ottfoekst.petankoshogi.board.ShogiPiece.SELF;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.petanko.ottfoekst.boardsrch.util.IoUtils;
@@ -48,6 +50,9 @@ public class BoardDataIndexer {
 	/** 局面転置インデックスポインタファイル書き込み */
 	private DataOutputStream[] boardInvPtrDosList;
 	
+	/**　局面転置インデックスの書き込み */
+	private BoardDataIndexWriter[] boardDataIndexWriterList;
+	
 	/** kifファイルの内部ユーティリティクラス */
 	private KifFileUtils kifFileUtils = new KifFileUtils();
 	
@@ -70,12 +75,15 @@ public class BoardDataIndexer {
 		try {
 			// 各種数値の初期化
 			initializeAllNumList();
-			// 各種DataOutputStreamの初期化
-			initializeDosList();
+			// 各種DataOutputStreamやWriterの初期化
+			initializeDosListAndWriterList();
 			
 			// メモリ上に転置インデックスを構築
 			createInvIndexOnMemory(kifuDataPath.toFile());
-			// TODO 転置インデックスの書き出し
+			// 転置インデックスの書き出し
+			for(int blockNo = 0; blockNo < 50; blockNo++ ) {
+				boardDataIndexWriterList[blockNo].writeToIndexFile(boardInvDosList[blockNo], boardInvPtrDosList[blockNo]);
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -92,18 +100,17 @@ public class BoardDataIndexer {
 		kifuIdFilePtr = 0;
 	}
 
-	private void initializeDosList() throws Exception {
+	private void initializeDosListAndWriterList() throws Exception {
 		kifuIdDos = IoUtils.newDataOutputStream(IndexerUtils.getKifuIdFilePath(indexDir));
 		kifuIdPtrDos = IoUtils.newDataOutputStream(IndexerUtils.getKifuIdPtrFilePath(indexDir));
 		
 		boardInvDosList = new DataOutputStream[50];
+		boardInvPtrDosList = new DataOutputStream[50];
+		boardDataIndexWriterList = new BoardDataIndexWriter[50];
 		for(int blockNo = 0; blockNo < boardInvDosList.length; blockNo++) {
 			boardInvDosList[blockNo] = IoUtils.newDataOutputStream(IndexerUtils.getBoardInvFilePath(indexDir, blockNo));
-		}
-		
-		boardInvPtrDosList = new DataOutputStream[50];
-		for(int blockNo = 0; blockNo < boardInvPtrDosList.length; blockNo++) {
 			boardInvPtrDosList[blockNo] = IoUtils.newDataOutputStream(IndexerUtils.getBoardInvPtrFilePath(indexDir, blockNo));
+			boardDataIndexWriterList[blockNo] = new BoardDataIndexWriter();
 		}
 	}
 
@@ -119,8 +126,9 @@ public class BoardDataIndexer {
 		else if(kifuDataFileOrFolder.toString().endsWith(".kif")) {
 			// 棋譜IDポインタファイルへの書き込み
 			kifuIdPtrDos.writeLong(kifuIdFilePtr);
+			kifuIdPtrDos.flush();
 			// 棋譜IDファイルへの書き込み
-			kifuIdFilePtr += outputKifuIdFile(kifuDataFileOrFolder);
+			kifuIdFilePtr += writeKifuIdFile(kifuDataFileOrFolder);
 			
 			// 棋譜ファイルを読み込む
 			String[] kifuDataList = Files.readAllLines(kifuDataFileOrFolder.toPath(), Charset.forName("MS932")).toArray(new String[0]);
@@ -132,21 +140,32 @@ public class BoardDataIndexer {
 		}
 	}
 
-	private long outputKifuIdFile(File kifuDataFileOrFolder) throws Exception {
+	private long writeKifuIdFile(File kifuDataFileOrFolder) throws Exception {
 		// 棋譜ファイル名
 		String kifuFileName = kifuDataFileOrFolder.getAbsolutePath();
 		// 棋譜ファイル名を棋譜IDファイルに書き込む
 		kifuIdDos.writeChars(kifuFileName);
+		kifuIdDos.flush();
 		
 		// 棋譜ファイル名の長さを返す
 		return kifuFileName.length();
 	}
 
 	private void addBoardDataToInvIndex(String[] kifuDataList) {
+		// 指し手リスト
+		PieceMove[] pieceMoveList = kifFileUtils.createPieceMoveListFromKifFile(kifuDataList);
+		
 		// 平手の初期局面
 		PiecePosition piecePosition = ShogiUtils.getHiratePiecePosition();
+		// 初期局面をインデックスに登録
+		IntStream.range(0, 50).forEach(blockNo -> boardDataIndexWriterList[blockNo].add(kifuId, piecePosition.getTesu(), IndexerUtils.calculateBoardTokenId(piecePosition, blockNo)));
 		
-		PieceMove[] pieceMoveList = kifFileUtils.createPieceMoveListFromKifFile(kifuDataList);
+		for(PieceMove pieceMove : pieceMoveList) {
+			// 指し手に従って局面を動かす
+			piecePosition.movePiecePostion(pieceMove);
+			// 各局面トークンをインデックスに登録
+			IntStream.range(0, 50).forEach(blockNo -> boardDataIndexWriterList[blockNo].add(kifuId, piecePosition.getTesu(), IndexerUtils.calculateBoardTokenId(piecePosition, blockNo)));
+		}
 	}
 
 	private void closeDosList() {

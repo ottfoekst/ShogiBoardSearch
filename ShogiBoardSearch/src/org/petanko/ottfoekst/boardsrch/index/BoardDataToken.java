@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class BoardDataToken {
 	
 	/** 局面の完全一致検索でも使われるblockNoのリスト */
-	private static final int[] USED_FOR_PERFECT_MATCH_BLOCKNO_LIST = new int[]{0, 3, 6, 21, 24, 27, 42, 45, 48, 50};
+	private static final int[] BLOCKNO_LIST_USED_FOR_PERFECT_MATCH = new int[]{0, 3, 6, 21, 24, 27, 42, 45, 48, 50};
 
 	/** 盤面データのどの部分を表すかを示す数値。0～48:盤面データ、49は先手の持ち駒データを表す。 */
 	private byte blockNo;
@@ -40,7 +40,7 @@ public class BoardDataToken {
 	 * @return 類似局面検索でしか使われないトークンかどうか
 	 */
 	public boolean useOnlySimilarSearch() {
-		return Arrays.binarySearch(USED_FOR_PERFECT_MATCH_BLOCKNO_LIST, blockNo) == -1;
+		return Arrays.binarySearch(BLOCKNO_LIST_USED_FOR_PERFECT_MATCH, blockNo) == -1;
 	}
 	
 	/**
