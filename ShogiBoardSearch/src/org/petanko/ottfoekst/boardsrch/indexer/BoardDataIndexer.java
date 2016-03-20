@@ -21,7 +21,7 @@ import org.petanko.ottfoekst.petankoshogi.board.ShogiPiece;
 import org.petanko.ottfoekst.petankoshogi.util.ShogiUtils;
 
 /**
- * 局面データのインデックスを生成するクラス。
+ * 局面転置インデックスを生成するクラス。
  * @author ottfoekst
  *
  */

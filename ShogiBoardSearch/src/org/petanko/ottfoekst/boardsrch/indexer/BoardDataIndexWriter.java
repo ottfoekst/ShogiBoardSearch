@@ -62,7 +62,8 @@ public class BoardDataIndexWriter {
 		Collections.sort(boardTokenIdList);
 		for(long boardTokenId : boardTokenIdList) {
 			// 局面転置インデックスポインタファイルへの書き込み
-			boardInvPtrDos.writeLong(boardInvPtr);
+			boardInvPtrDos.writeLong(boardTokenId); // 局面トークンID
+			boardInvPtrDos.writeLong(boardInvPtr); // 局面転置インデックスのポインタ
 			boardInvPtrDos.flush();
 			
 			// 局面転置インデックスファイルへの書き込み
