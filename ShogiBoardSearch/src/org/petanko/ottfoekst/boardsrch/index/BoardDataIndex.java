@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.petanko.ottfoekst.boardsrch.indexer.IndexerUtils;
+import org.petanko.ottfoekst.boardsrch.util.ArrayUtils;
 import org.petanko.ottfoekst.boardsrch.util.IoUtils;
 
 /**
@@ -67,20 +68,9 @@ public class BoardDataIndex {
 			}
 			
 			// 局面転置インデックス(オンメモリ)にセットする
-			boardTokenIdMatrix[blockNo] = createArrayWithLongMax(boardTokenIdList);
-			boardInvPtrMatrix[blockNo] = createArrayWithLongMax(boardInvPtrList);
+			boardTokenIdMatrix[blockNo] = ArrayUtils.createArrayWithLongMax(boardTokenIdList);
+			boardInvPtrMatrix[blockNo] = ArrayUtils.createArrayWithLongMax(boardInvPtrList);
 		}
-	}
-	
-	private long[] createArrayWithLongMax(List<Long> longList) {
-		
-		long[] longArray = new long[longList.size() + 1];
-		for(int index = 0; index < longList.size(); index++) {
-			longArray[index] = longList.get(index);
-		}
-		longArray[longList.size()] = Long.MAX_VALUE; // 番人
-		
-		return longArray;
 	}
 	
 	/**

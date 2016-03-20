@@ -125,7 +125,8 @@ public class BoardDataIndexer {
 		// 棋譜ファイル(拡張子:kif)のとき
 		else if(kifuDataFileOrFolder.toString().endsWith(".kif")) {
 			// 棋譜IDポインタファイルへの書き込み
-			kifuIdPtrDos.writeLong(kifuIdFilePtr);
+			kifuIdPtrDos.writeInt(kifuId); // 棋譜ID
+			kifuIdPtrDos.writeLong(kifuIdFilePtr); // 棋譜IDファイルのポインタ
 			kifuIdPtrDos.flush();
 			// 棋譜IDファイルへの書き込み
 			kifuIdFilePtr += writeKifuIdFile(kifuDataFileOrFolder);
