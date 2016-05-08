@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.petanko.ottfoekst.boardsrch.index.KifuIdIndex;
 import org.petanko.ottfoekst.boardsrch.util.IoUtils;
 import org.petanko.ottfoekst.boardsrch.util.KifFileUtils;
 import org.petanko.ottfoekst.petankoshogi.board.PieceMove;
@@ -134,10 +135,11 @@ public class BoardDataIndexer {
 		String kifuFileName = kifuDataFileOrFolder.getAbsolutePath();
 		// 棋譜ファイル名を棋譜IDファイルに書き込む
 		kifuIdDos.writeChars(kifuFileName);
+		kifuIdDos.writeChar(KifuIdIndex.KIFU_FILEPATH_DELIM);
 		kifuIdDos.flush();
 		
-		// 棋譜ファイル名の長さを返す
-		return kifuFileName.length();
+		// 棋譜ファイル名の長さにデリミタの1を加え、2倍にして返す
+		return 2 * (kifuFileName.length() + 1);
 	}
 
 

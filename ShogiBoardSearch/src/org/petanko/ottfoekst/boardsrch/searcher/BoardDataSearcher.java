@@ -75,6 +75,9 @@ public class BoardDataSearcher {
 				boardDataIndexResult = andBoardDataIndex(boardDataIndexResult, currentBoardDataIndex);
 			}
 		}
+		
+		// 検索結果の出力
+		outputSearchResultOfPerfectMatch(boardDataIndexResult, piecePosition);
 	}
 	
 	private Map<Integer, List<Integer>> andBoardDataIndex(Map<Integer, List<Integer>> boardDataIndexResult,	Map<Integer, List<Integer>> currentBoardDataIndex) {
@@ -101,6 +104,21 @@ public class BoardDataSearcher {
 		}
 				
 		return andBoardDataIndex;
+	}
+
+	private void outputSearchResultOfPerfectMatch(Map<Integer, List<Integer>> boardDataIndexResult, PiecePosition piecePosition) throws Exception {
+		
+		// 検索局面の出力
+		piecePosition.outputBoard();
+		System.out.println("");
+		
+		// 検索結果の出力
+		for(Map.Entry<Integer, List<Integer>> entry : boardDataIndexResult.entrySet()) {
+			// 棋譜ファイルパスの出力
+			System.out.println(kifuIdIndex.getKifuFilePath(entry.getKey()));
+			// 手数の出力
+			System.out.println("　(第　" + String.join(", ", entry.getValue().stream().map(String::valueOf).toArray(size -> new String[size])) + "　手)" + "\n");
+		}
 	}
 
 	private void searchBoardBySimilarSearch(PiecePosition piecePosition, float similarSearchThreshold) {
