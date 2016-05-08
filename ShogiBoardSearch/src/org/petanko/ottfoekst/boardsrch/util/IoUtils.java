@@ -48,7 +48,7 @@ public class IoUtils {
 	public static BufferedReader newBufferedReader(Path filePath) throws Exception {
 		return new BufferedReader(new FileReader(filePath.toFile()));
 	}
-
+	
 	/**
 	 * StreamやWriterをすべて閉じます。
 	 * IOExceptionが起こっても無視して一通り全て閉じます。

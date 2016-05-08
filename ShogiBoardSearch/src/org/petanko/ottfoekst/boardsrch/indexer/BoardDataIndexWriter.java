@@ -94,39 +94,48 @@ public class BoardDataIndexWriter {
 		// ポスティングリストの書き込み
 		int postingIndex = 0;
 		int beforeKifuId = -1;
+
+		// 手数リストの生成
+		List<Integer> tesuList = new ArrayList<>();
+		int kifuId = 0;
 		while(postingIndex < postingList.size()) {
-			// 手数リストの生成
-			List<Integer> tesuList = new ArrayList<>();
-			int kifuId = 0;
-			while(postingIndex < postingList.size()) {
-				kifuId = Integer.parseInt(postingList.get(postingIndex).split(",")[0]);
-				// 初回 or 1つ前と同じ棋譜IDのとき
-				if(kifuId == -1 || kifuId == beforeKifuId) {
-					// 手数リストに追加
-					tesuList.add(Integer.parseInt(postingList.get(postingIndex).split(",")[1]));
-					postingIndex++;
-				}
-				// 異なる棋譜IDが出てきたとき
-				else {
-					beforeKifuId = kifuId;
-					// ループを抜ける
-					break;
-				}
+			kifuId = Integer.parseInt(postingList.get(postingIndex).split(",")[0]);
+			// 初回 or 1つ前と同じ棋譜IDのとき
+			if(beforeKifuId == -1 || kifuId == beforeKifuId) {
+				// 手数リストに追加
+				tesuList.add(Integer.parseInt(postingList.get(postingIndex).split(",")[1]));
 			}
-			
-			// 棋譜IDの出力
-			boardInvDos.writeInt(kifuId);
-			writeSize += 4;
-			// 出現手数の書き込み
-			boardInvDos.writeInt(tesuList.size());
-			writeSize += 4;
-			// 手数リストの書き込み
-			for(int tesu : tesuList) {
-				boardInvDos.writeInt(tesu);
+			// 異なる棋譜IDが出てきたとき
+			else {
+				// 棋譜IDの出力
+				boardInvDos.writeInt(beforeKifuId);
 				writeSize += 4;
+				// 出現手数の書き込み
+				boardInvDos.writeInt(tesuList.size());
+				writeSize += 4;
+				// 手数リストの書き込み
+				for(int tesu : tesuList) {
+					boardInvDos.writeInt(tesu);
+					writeSize += 4;
+				}
+				
+				tesuList = new ArrayList<>();
+				tesuList.add(Integer.parseInt(postingList.get(postingIndex).split(",")[1]));
 			}
-			
+			beforeKifuId = kifuId;
 			postingIndex++;
+		}
+		
+		// 棋譜IDの出力
+		boardInvDos.writeInt(beforeKifuId);
+		writeSize += 4;
+		// 出現手数の書き込み
+		boardInvDos.writeInt(tesuList.size());
+		writeSize += 4;
+		// 手数リストの書き込み
+		for(int tesu : tesuList) {
+			boardInvDos.writeInt(tesu);
+			writeSize += 4;
 		}
 		
 		return writeSize;
