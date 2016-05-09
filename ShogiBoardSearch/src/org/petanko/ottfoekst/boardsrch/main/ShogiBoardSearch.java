@@ -18,7 +18,6 @@ public class ShogiBoardSearch {
 	 * @param args[2] 手数
 	 * @param args[3] 検索方式(0:一致局面検索、1:類似局面検索)
 	 * @param args[4] 類似局面検索のスコア閾値(0.0～1.0)
-	 * @throws Exception 
 	 */
 	public static void main(String[] args) {
 		
@@ -39,7 +38,7 @@ public class ShogiBoardSearch {
 			boardDataSearcher.shutDown();
 		}
 		catch(Exception e) {
-			e.printStackTrace();;
+			e.printStackTrace();
 		}
 	}
 

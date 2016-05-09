@@ -115,7 +115,7 @@ public class BoardDataSearcher {
 		// 検索結果の出力
 		for(Map.Entry<Integer, List<Integer>> entry : boardDataIndexResult.entrySet()) {
 			// 棋譜ファイルパスの出力
-			System.out.println(kifuIdIndex.getKifuFilePath(entry.getKey()));
+			System.out.println("\"" + kifuIdIndex.getKifuFilePath(entry.getKey()) + "\"");
 			// 手数の出力
 			System.out.println("　(第　" + String.join(", ", entry.getValue().stream().map(String::valueOf).toArray(size -> new String[size])) + "　手)" + "\n");
 		}

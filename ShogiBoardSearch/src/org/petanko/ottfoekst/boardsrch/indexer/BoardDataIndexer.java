@@ -114,19 +114,24 @@ public class BoardDataIndexer {
 			}
 		}
 		// 棋譜ファイル(拡張子:kif)のとき
-		else if(kifuDataFileOrFolder.toString().endsWith(".kif")) {
-			// 棋譜IDポインタファイルへの書き込み
-			kifuIdPtrDos.writeInt(kifuId); // 棋譜ID
-			kifuIdPtrDos.writeLong(kifuIdFilePtr); // 棋譜IDファイルのポインタ
-			kifuIdPtrDos.flush();
-			// 棋譜IDファイルへの書き込み
-			kifuIdFilePtr += writeKifuIdFile(kifuDataFileOrFolder);
-			
-			// 棋譜ファイルの内容に従って盤面を動かし、局面をインデックスに登録
-			addBoardDataToInvIndex(kifuDataFileOrFolder);
-			
-			// 棋譜IDのカウントアップ
-			kifuId++;
+		else if(kifuDataFileOrFolder.toString().toLowerCase().endsWith(".kif")) {
+			try {
+				// 棋譜ファイルの内容に従って盤面を動かし、局面をインデックスに登録
+				addBoardDataToInvIndex(kifuDataFileOrFolder);
+				
+				// 棋譜IDポインタファイルへの書き込み
+				kifuIdPtrDos.writeInt(kifuId); // 棋譜ID
+				kifuIdPtrDos.writeLong(kifuIdFilePtr); // 棋譜IDファイルのポインタ
+				kifuIdPtrDos.flush();
+				// 棋譜IDファイルへの書き込み
+				kifuIdFilePtr += writeKifuIdFile(kifuDataFileOrFolder);
+				
+				// 棋譜IDのカウントアップ
+				kifuId++;
+			}
+			catch(Exception e) {
+				System.out.println("illegal file : " + kifuDataFileOrFolder.getAbsolutePath());
+			}
 		}
 	}
 
