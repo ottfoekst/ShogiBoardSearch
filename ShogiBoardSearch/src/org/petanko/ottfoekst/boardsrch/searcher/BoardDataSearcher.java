@@ -1,5 +1,6 @@
 package org.petanko.ottfoekst.boardsrch.searcher;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -137,11 +138,11 @@ public class BoardDataSearcher {
 			mergeBoardDataIndexAndScore(boardDataIndexResultAndScore, currentBoardDataIndex, blockNo, similarSearchThreshold);
 		}
 
-		// scoreが最も高い結果に集約する
+		// スコアが最も高い結果に集約する
 		Set<SimilarSearchResult> similarSearchResultSet = aggregateHighestScoreResult(boardDataIndexResultAndScore, similarSearchThreshold);
 
-		int debug = 1;
-		// TODO 検索結果の出力;
+		// 検索結果の出力
+		outputSearchResultOfSimilarSearch(similarSearchResultSet, piecePosition);
 	}
 
 	private void mergeBoardDataIndexAndScore(Map<Integer, Map<Integer, Integer>> boardDataIndexResultAndScore, Map<Integer, List<Integer>> currentBoardDataIndex, int blockNo, int similarSearchThreshold) {
@@ -196,6 +197,32 @@ public class BoardDataSearcher {
 			});
 
 		return similarSearchResultSet;
+	}
+
+	private void outputSearchResultOfSimilarSearch(Set<SimilarSearchResult> similarSearchResultSet, PiecePosition piecePosition) {
+		// 検索局面の出力
+		piecePosition.outputBoard();
+		System.out.println("");
+
+		// 検索結果の出力
+		similarSearchResultSet.stream().forEach(result ->
+			{
+				try {
+					System.out.println("-----");
+					String kifuFilePath = kifuIdIndex.getKifuFilePath(result.kifuId);
+					// 検索結果盤面の出力
+					SearchUtils.convertToPiecePosition(new File(kifuFilePath).toPath(), result.tesu).outputBoard();
+					System.out.println("");
+					// スコアの出力
+					System.out.println("Score = " + result.score);
+					// 棋譜ファイルパスの出力
+					System.out.println("\"" + kifuFilePath + "\"");
+					// 手数の出力
+					System.out.println("　(第　" + result.tesu + "　手)" + "\n");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 	}
 
 	/**

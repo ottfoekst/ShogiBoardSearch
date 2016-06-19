@@ -4,10 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import org.petanko.ottfoekst.boardsrch.searcher.BoardDataSearcher;
-import org.petanko.ottfoekst.boardsrch.util.KifFileUtils;
-import org.petanko.ottfoekst.petankoshogi.board.PieceMove;
-import org.petanko.ottfoekst.petankoshogi.board.PiecePosition;
-import org.petanko.ottfoekst.petankoshogi.util.ShogiUtils;
+import org.petanko.ottfoekst.boardsrch.searcher.SearchUtils;
 
 public class ShogiBoardSearch {
 
@@ -32,7 +29,7 @@ public class ShogiBoardSearch {
 			// åüçıèÄîı
 			BoardDataSearcher boardDataSearcher = new BoardDataSearcher(indexDir);
 			// åüçı
-			boardDataSearcher.searchBoardData(convertToPiecePosition(kifuFilePath, tesu), searchType != 1, similarSearchThreshold);
+			boardDataSearcher.searchBoardData(SearchUtils.convertToPiecePosition(kifuFilePath, tesu), searchType != 1, similarSearchThreshold);
 
 			// åüçıèIóπ
 			boardDataSearcher.shutDown();
@@ -40,17 +37,5 @@ public class ShogiBoardSearch {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static PiecePosition convertToPiecePosition(Path kifuFilePath, int tesu) throws Exception {
-
-		PiecePosition piecePosition = ShogiUtils.getHiratePiecePosition();
-		PieceMove[] pieceMoveList = new KifFileUtils().createPieceMoveListFromKifFile(kifuFilePath);
-
-		for(int tesuIndex = 0; tesuIndex < tesu; tesuIndex++) {
-			piecePosition.movePiecePostion(pieceMoveList[tesuIndex]);
-		}
-
-		return piecePosition;
 	}
 }
