@@ -20,10 +20,10 @@ import org.petanko.ottfoekst.petankoshogi.util.ShogiUtils;
  *
  */
 public class KifFileUtils {
-	
+
 	/** 1手前の移動先マス(to) */
 	private int beforeTo = 0;
-	
+
 	/**
 	 * kifファイルを読み込み、指し手リストを返します。kifファイルの文字コードはShift_JIS固定です。
 	 * @param kifuFilePath kifファイルのパス
@@ -32,7 +32,7 @@ public class KifFileUtils {
 	 */
 	public PieceMove[] createPieceMoveListFromKifFile(Path kifuFilePath) throws Exception {
 		List<PieceMove> pieceMoveList = new ArrayList<PieceMove>();
-		
+
 		// 棋譜ファイルを読み込む
 		String[] kifuDataList = Files.readAllLines(kifuFilePath, Charset.forName("MS932")).toArray(new String[0]);
 		// 平手の初期局面
@@ -44,7 +44,7 @@ public class KifFileUtils {
 			// 棋譜の書かれた行のとき
 			if(kifuData.length() > 0 && kifuData.charAt(0) == (' ') && !kifuData.contains("投了") && !kifuData.contains("中断")) {
 				// 棋譜を取得
-				kifuAndFrom = 
+				kifuAndFrom =
 						new String[]{kifuData.substring(5, kifuData.indexOf('(')).trim(), kifuData.substring(kifuData.indexOf("(") + 1, kifuData.indexOf(")"))};
 				// PieceMoveに変換してリストに追加
 				PieceMove pieceMove = convertToPieceMove(kifuAndFrom, piecePosition, tesu);
@@ -61,23 +61,23 @@ public class KifFileUtils {
 	private PieceMove convertToPieceMove(String[] kifuAndFrom, PiecePosition piecePosition, int tesu) {
 		// アラビア数字を使った棋譜に変換
 		kifuAndFrom = convertToArabicNumKifu(kifuAndFrom);
-		
+
 		int from = kifuAndFrom[0].contains("打") ? 0 : Character.getNumericValue(kifuAndFrom[1].charAt(0)) * 0x10 + Character.getNumericValue(kifuAndFrom[1].charAt(1));
 		int to = getToPosFromKifu(kifuAndFrom[0]);
 		int piece = (from == 0) ? getDroppedPiece(kifuAndFrom[0], tesu) : piecePosition.getBoard()[from];
 		int capturePiece = piecePosition.getBoard()[to];
 		boolean isPromote = kifuAndFrom[0].endsWith("成");
-		
+
 		// beforeToの置き換え
 		beforeTo = (to / 0x10) * 10 + to % 0x10;
-		
+
 		return new PieceMove(from, to, piece, capturePiece, isPromote);
 	}
 
 	private String[] convertToArabicNumKifu(String[] kifuAndFrom) {
 		return new String[]{convertToArabicNumKifu(kifuAndFrom[0]), kifuAndFrom[1]};
 	}
-	
+
 	private String convertToArabicNumKifu(String kifu) {
 		StringBuilder buf = new StringBuilder();
 		int arabicNum = -1;
@@ -102,7 +102,7 @@ public class KifFileUtils {
 		}
 		return buf.toString();
 	}
-	
+
 	private int getToPosFromKifu(String kifu) {
 		return Character.getNumericValue(kifu.charAt(0)) * 0x10 + Character.getNumericValue(kifu.charAt(1));
 	}
@@ -116,7 +116,7 @@ public class KifFileUtils {
 			}
 		}
 		int turn = (tesu % 2 == 1) ? SELF : ENEMY;
-		
+
 		return (piece&~SELF&~ENEMY)|turn;
 	}
 }
